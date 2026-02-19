@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тренажер: С++ выражения (Продвинутый)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .task-row { display: grid; grid-template-columns: 50px 200px 1fr 100px; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .math-img { max-height: 45px; vertical-align: middle; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: 'Courier New', monospace; width: 95%; }
+        .correct { color: #27ae60; font-weight: bold; font-size: 1.2em; }
+        .wrong { color: #e74c3c; font-weight: bold; font-size: 1.2em; }
+        button { margin-top: 20px; padding: 12px 25px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #2980b9; }
+        .hint { font-size: 0.85em; color: #7f8c8d; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Перевод в C++ (умная проверка)</h2>
+    <p class="hint"><i>Можно использовать <b>pow(a,2)</b> или <b>a*a</b>, а также <b>abs()</b> или <b>fabs()</b>.</i></p>
+
+    <div id="quiz">
+        <div class="task-row" style="font-weight: bold; border-bottom: 2px solid #333;">
+            <div>№</div>
+            <div>Математика</div>
+            <div>Ваш код на C++</div>
+            <div>Статус</div>
+        </div>
+
+        <div class="task" data-ans="i*i*r">
+            <div class="task-row">
+                <div>1)</div>
+                <div><img src="1.png" alt="I^2 * R" class="math-img"></div>
+                <input type="text" placeholder="Напр: pow(i,2)*r или i*i*r">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="a*b*sin(c)">
+            <div class="task-row">
+                <div>2)</div>
+                <div><img src="2.png" alt="ab sin c" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="sqrt(a*a+b*b-2*a*b*cos(c))">
+            <div class="task-row">
+                <div>3)</div>
+                <div><img src="3.png" alt="cos theorem" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="(a*d+b*c)/(a*d)">
+            <div class="task-row">
+                <div>4)</div>
+                <div><img src="4.png" alt="fraction" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="sqrt(1-sin(x)*sin(x))">
+            <div class="task-row">
+                <div>5)</div>
+                <div><img src="5.png" alt="trig" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="1/sqrt(a*x*x+b*x+c)">
+            <div class="task-row">
+                <div>6)</div>
+                <div><img src="6.png" alt="1/sqrt" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="(sqrt(x+1)+sqrt(x-1))/(2*sqrt(x))">
+            <div class="task-row">
+                <div>7)</div>
+                <div><img src="7.png" alt="roots" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="abs(1-abs(x))">
+            <div class="task-row">
+                <div>8)</div>
+                <div><img src="8.png" alt="abs" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+
+        <div class="task" data-ans="abs(x)+abs(x+1)">
+            <div class="task-row">
+                <div>9)</div>
+                <div><img src="9.png" alt="abs sum" class="math-img"></div>
+                <input type="text">
+                <span class="status"></span>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="checkAll()">Проверить всё</button>
+</div>
+
+<script>
+    function normalize(str) {
+        if (!str) return "";
+        let s = str.toLowerCase().replace(/\s+/g, '');
+        
+        // 1. Унифицируем модуль: fabs -> abs
+        s = s.replace(/fabs/g, 'abs');
+        
+        // 2. Унифицируем pow(переменная, 2) -> (переменная*переменная)
+        // Это регулярное выражение ищет pow(что-то, 2) и меняет на (что-то*что-то)
+        s = s.replace(/pow\(([^,]+),2\)/g, "($1*$1)");
+        
+        // 3. Убираем лишние внешние скобки для чистоты сравнения (опционально)
+        // Но для формул типа (a*a) == a*a лучше оставить как есть или привести к одному виду
+        return s;
+    }
+
+    function checkAll() {
+        const tasks = document.querySelectorAll('.task');
+        tasks.forEach(t => {
+            const input = t.querySelector('input');
+            const status = t.querySelector('.status');
+            const expectedRaw = t.getAttribute('data-ans');
+            
+            const userAns = normalize(input.value);
+            const targetAns = normalize(expectedRaw);
+
+            // Дополнительная проверка: если в коде возведение в квадрат записано как (x*x) 
+            // а пользователь ввел x*x без скобок, или наоборот.
+            // Упрощенное сравнение: убираем все скобки вообще для финального матча (рискованно, но для простых формул работает)
+            const ultraClean = (val) => val.replace(/[\(\)]/g, '');
+
+            if (userAns === targetAns || ultraClean(userAns) === ultraClean(targetAns)) {
+                if(userAns !== "") {
+                    status.textContent = "✓";
+                    status.className = "status correct";
+                }
+            } else {
+                status.textContent = "✗";
+                status.className = "status wrong";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
