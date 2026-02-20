@@ -6,7 +6,15 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .task-row { display: grid; grid-template-columns: 50px 200px 1fr 100px; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .task-row { 
+    display: grid; 
+    /* Заменяем фиксированные 200px на 'max-content' */
+    grid-template-columns: 50px max-content 1fr 100px; 
+    align-items: center; 
+    gap: 20px; 
+    padding: 15px 0; 
+    border-bottom: 1px solid #eee; 
+}
         .math-img { max-height: 45px; vertical-align: middle; }
         input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: 'Courier New', monospace; width: 95%; }
         .correct { color: #27ae60; font-weight: bold; font-size: 1.2em; }
@@ -161,4 +169,5 @@
 </script>
 
 </body>
+
 </html>
